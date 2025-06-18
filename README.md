@@ -196,8 +196,6 @@ Os testes foram executados em um ambiente contendo:
 
 **Skip List** mantém desempenho próximo da RB, sendo competitiva até cerca de 420.000 elementos.
 
----
-
 ## Conclusões
 
 | Estrutura | Vantagens | Desvantagens |
@@ -206,3 +204,7 @@ Os testes foram executados em um ambiente contendo:
 | **RB-Tree** | Melhor equilíbrio geral entre busca, remoção e balanceamento | Implementação mais complexa |
 | **Skip List** | Simples e eficiente em muitos casos | Desempenho varia com sorteio (probabilístico) |
 
+## Autores
+
+Ana Julia Vieira P.A. Costa e
+Gabriel Menezes
