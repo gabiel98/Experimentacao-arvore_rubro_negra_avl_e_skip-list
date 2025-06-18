@@ -119,7 +119,6 @@ function RB_Insert(tree, key):
                 recolore pai e avô
                 rotacao_direita(grandparent)
         else:
-            // caso espelhado
     tree.root.color = BLACK
 ```
 
@@ -129,7 +128,6 @@ function RB_Insert(tree, key):
 function SL_Insert(skiplist, key):
     update[1..maxLevel]
     x = skiplist.header
-    // percorre níveis do topo para baixo
     for i from nível_atual down to 1:
         while x.forward[i] and x.forward[i].key < key:
             x = x.forward[i]
@@ -144,8 +142,6 @@ function SL_Insert(skiplist, key):
         update[i].forward[i] = novo
 
 function SL_Delete(skiplist, key):
-    // busca e cria update[]
-    // remove ajustando ponteiros nos níveis relevantes
 ```
 
 ## Espaço para Insights
