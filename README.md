@@ -144,4 +144,34 @@ function SL_Insert(skiplist, key):
 function SL_Delete(skiplist, key):
 ```
 
-## Espaço para Insights
+## Ambiente de Execução
+Os testes foram executados em um ambiente contendo:
+
+* **Sistema Operacional**: Windows 11 Home 64 bits
+* **Especificações**:
+
+  * Processador: AMD Ryzen 5 5600, 3.5GHz (4.4GHz Turbo), 6-Cores 12-Threads
+  * Placa de Vídeo: MSI NVIDIA GeForce RTX 3060 VENTUS 2X OC, LHR, 12GB GDDR6, DLSS, Ray Tracing
+  * Memória RAM:  DDR4 16GB 3733Mhz
+  * SSD: SSD 500GB Leitura 4800MBs e Gravação 2700MBs
+
+## Insights dos Resultados
+
+### Tempo Balanceamento – AVL x RB
+  
+  <img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="80%" style="display: center;">
+
+---
+
+### Tempo Busca + Remoção
+
+  <img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="80%" style="display: center;">
+
+---
+
+### Tempo Total
+
+<img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="80%" style="display: center;">
+
+
+---
