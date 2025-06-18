@@ -81,15 +81,12 @@ Os arquivos PNG serão salvos na pasta `graficos/`.
 function AVL_Insert(node, key):
     if node é NULO:
         return novo_node(key)
-    // inserção recursiva
     if key < node.key:
         node.left = AVL_Insert(node.left, key)
     else if key > node.key:
         node.right = AVL_Insert(node.right, key)
-    // atualiza altura e calcula fator de balanceamento
     atualizar_altura(node)
     balance = altura(node.left) - altura(node.right)
-    // aplica rotações conforme necessidade
     if balance > 1 and key < node.left.key:
         return rotacao_direita(node)
     if balance < -1 and key > node.right.key:
