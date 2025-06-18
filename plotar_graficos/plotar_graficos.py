@@ -4,7 +4,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("../resultados/resultados_ate_50.csv")
+df = pd.read_csv("../resultados/resultados.csv")
 sizes = sorted(df["N"].unique())
 
 def plot_metric(metric, ylabel, filename, skip_zero=False):

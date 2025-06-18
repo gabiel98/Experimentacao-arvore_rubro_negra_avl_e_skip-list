@@ -11,15 +11,13 @@
 
 int clock_gettime(int type, struct timespec *spec) {
     static LARGE_INTEGER freq;
-    static BOOL use_qpc;
     static int initialized = 0;
-    
+
     if (!initialized) {
-        printf("[TIMER] Inicializando contador de performance...\n");
-        use_qpc = QueryPerformanceFrequency(&freq);
+        QueryPerformanceFrequency(&freq);
         initialized = 1;
     }
-    
+
     LARGE_INTEGER count;
     QueryPerformanceCounter(&count);
     spec->tv_sec = count.QuadPart / freq.QuadPart;
@@ -32,13 +30,10 @@ int clock_gettime(int type, struct timespec *spec) {
 
 // ====================== Funções de temporização ==========================
 static inline int64_t diff_nsec(struct timespec *start, struct timespec *end) {
-    return (int64_t)(end->tv_sec - start->tv_sec) * 1000000000LL 
-         + (int64_t)(end->tv_nsec - start->tv_nsec);
+    return (int64_t)(end->tv_sec - start->tv_sec) * 1000000000LL + (int64_t)(end->tv_nsec - start->tv_nsec);
 }
 
-// ====================== Geração e embaralhamento de vetores ==========================
 void shuffle_array(int *arr, size_t n) {
-    printf("[SHUFFLE] Embaralhando array de tamanho %zu...\n", n);
     for (size_t i = n - 1; i > 0; --i) {
         size_t j = (size_t)(rand() % (i + 1));
         int tmp = arr[i];
@@ -48,15 +43,9 @@ void shuffle_array(int *arr, size_t n) {
 }
 
 int* gera_vetor(int n) {
-    printf("[GERA_VETOR] Criando vetor de tamanho %d...\n", n);
     int *v = malloc(n * sizeof(int));
-    if (!v) {
-        fprintf(stderr, "Falha ao alocar vetor de tamanho %d\n", n);
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < n; i++) {
-        v[i] = i + 1;
-    }
+    if (!v) exit(EXIT_FAILURE);
+    for (int i = 0; i < n; i++) v[i] = i + 1;
     shuffle_array(v, n);
     return v;
 }
@@ -78,7 +67,6 @@ static inline int avl_getBalance(AVLNode *N) {
 }
 
 AVLNode* avl_newNode(int key) {
-    printf("[AVL] Criando novo nó com chave %d\n", key);
     AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
     node->key = key;
     node->left = node->right = NULL;
@@ -87,7 +75,6 @@ AVLNode* avl_newNode(int key) {
 }
 
 AVLNode* avl_rightRotate(AVLNode *y) {
-    printf("[AVL] Rotação direita no nó %d\n", y->key);
     AVLNode *x = y->left;
     AVLNode *T2 = x->right;
     x->right = y;
@@ -98,7 +85,6 @@ AVLNode* avl_rightRotate(AVLNode *y) {
 }
 
 AVLNode* avl_leftRotate(AVLNode *x) {
-    printf("[AVL] Rotação esquerda no nó %d\n", x->key);
     AVLNode *y = x->right;
     AVLNode *T2 = y->left;
     y->left = x;
@@ -110,8 +96,6 @@ AVLNode* avl_leftRotate(AVLNode *x) {
 
 AVLNode* avl_insert(AVLNode* node, int key) {
     if (!node) return avl_newNode(key);
-    
-    printf("[AVL] Inserindo chave %d (nó atual: %d)\n", key, node->key);
     
     if (key < node->key)
         node->left = avl_insert(node->left, key);
@@ -125,23 +109,19 @@ AVLNode* avl_insert(AVLNode* node, int key) {
     
     // LL
     if (balance > 1 && key < node->left->key) {
-        printf("[AVL] Caso LL na chave %d\n", key);
         return avl_rightRotate(node);
     }
     // RR
     if (balance < -1 && key > node->right->key) {
-        printf("[AVL] Caso RR na chave %d\n", key);
         return avl_leftRotate(node);
     }
     // LR
     if (balance > 1 && key > node->left->key) {
-        printf("[AVL] Caso LR na chave %d\n", key);
         node->left = avl_leftRotate(node->left);
         return avl_rightRotate(node);
     }
     // RL
     if (balance < -1 && key < node->right->key) {
-        printf("[AVL] Caso RL na chave %d\n", key);
         node->right = avl_rightRotate(node->right);
         return avl_leftRotate(node);
     }
@@ -152,30 +132,24 @@ AVLNode* avl_insert(AVLNode* node, int key) {
 static AVLNode* avl_recalc_and_balance(AVLNode* node) {
     if (!node) return NULL;
     
-    printf("[AVL] Recalculando balanceamento para nó %d\n", node->key);
-    
     node->height = 1 + ((avl_height(node->left) > avl_height(node->right)) ? avl_height(node->left) : avl_height(node->right));
     int balance = avl_getBalance(node);
     
     // LL
     if (balance > 1 && avl_getBalance(node->left) >= 0) {
-        printf("[AVL] Balanceamento LL para nó %d\n", node->key);
         return avl_rightRotate(node);
     }
     // LR
     if (balance > 1 && avl_getBalance(node->left) < 0) {
-        printf("[AVL] Balanceamento LR para nó %d\n", node->key);
         node->left = avl_leftRotate(node->left);
         return avl_rightRotate(node);
     }
     // RR
     if (balance < -1 && avl_getBalance(node->right) <= 0) {
-        printf("[AVL] Balanceamento RR para nó %d\n", node->key);
         return avl_leftRotate(node);
     }
     // RL
     if (balance < -1 && avl_getBalance(node->right) > 0) {
-        printf("[AVL] Balanceamento RL para nó %d\n", node->key);
         node->right = avl_rightRotate(node->right);
         return avl_leftRotate(node);
     }
@@ -185,14 +159,12 @@ static AVLNode* avl_recalc_and_balance(AVLNode* node) {
 // Função auxiliar para balanceamento completo
 static void avl_full_balance(AVLNode** pnode) {
     if (!(*pnode)) return;
-    printf("[AVL] Balanceamento completo iniciado na subárvore de %d\n", (*pnode)->key);
     avl_full_balance(&((*pnode)->left));
     avl_full_balance(&((*pnode)->right));
     *pnode = avl_recalc_and_balance(*pnode);
 }
 
 AVLNode* avl_minValueNode(AVLNode* node) {
-    printf("[AVL] Buscando valor mínimo na subárvore de %d\n", node->key);
     AVLNode* current = node;
     while (current->left)
         current = current->left;
@@ -208,83 +180,57 @@ typedef struct {
 AVLDelResult avl_deleteNode_internal(AVLNode* root, int key) {
     struct timespec ts1, ts2, ts3;
     AVLDelResult result = { NULL, 0, 0 };
-    
-    printf("[AVL] Iniciando remoção da chave %d\n", key);
-    
-    // 1) Busca o nó
+
     clock_gettime(CLOCK_MONOTONIC, &ts1);
-    AVLNode* parent = root;
     AVLNode* curr = root;
-    AVLNode* to_delete = NULL;
-    AVLNode* parent_of_del = NULL;
-    
-    while (curr) {
-        printf("[AVL] Buscando chave %d (atual: %d)\n", key, curr ? curr->key : -1);
-        if (key < curr->key) {
-            parent = curr;
-            curr = curr->left;
-        } else if (key > curr->key) {
-            parent = curr;
-            curr = curr->right;
-        } else {
-            to_delete = curr;
-            parent_of_del = parent;
-            break;
-        }
+    AVLNode* parent = NULL;
+    while (curr && curr->key != key) {
+        parent = curr;
+        if (key < curr->key) curr = curr->left;
+        else curr = curr->right;
     }
     clock_gettime(CLOCK_MONOTONIC, &ts2);
     result.t_busca_remocao = diff_nsec(&ts1, &ts2);
-    
-    if (!to_delete) {
-        printf("[AVL] Chave %d não encontrada\n", key);
+
+    if (!curr) {
         result.node = root;
         return result;
     }
-    
-    printf("[AVL] Nó %d encontrado para remoção\n", to_delete->key);
-    
-    // 2) Remove o nó
-    if (to_delete->left && to_delete->right) {
-        printf("[AVL] Nó com dois filhos, buscando sucessor\n");
-        AVLNode* succ = avl_minValueNode(to_delete->right);
-        int succ_key = succ->key;
-        printf("[AVL] Sucessor encontrado: %d\n", succ_key);
-        AVLDelResult sub = avl_deleteNode_internal(root, succ_key);
-        result.t_busca_remocao += sub.t_busca_remocao;
-        root->key = succ_key;
-        result.node = root;
-        result.t_balance = sub.t_balance;
-        return result;
+
+    if (curr->left && curr->right) {
+        AVLNode* succParent = curr;
+        AVLNode* succ = curr->right;
+        while (succ->left) {
+            succParent = succ;
+            succ = succ->left;
+        }
+        curr->key = succ->key;
+        key = succ->key;
+        curr = succ;
+        parent = succParent;
     }
-    
-    AVLNode* child = to_delete->left ? to_delete->left : to_delete->right;
-    if (!parent_of_del) {
-        printf("[AVL] Removendo raiz da árvore\n");
+
+    AVLNode* child = (curr->left) ? curr->left : curr->right;
+    if (!parent) {
         root = child;
-    } else if (parent_of_del->left == to_delete) {
-        printf("[AVL] Removendo filho esquerdo de %d\n", parent_of_del->key);
-        parent_of_del->left = child;
+    } else if (parent->left == curr) {
+        parent->left = child;
     } else {
-        printf("[AVL] Removendo filho direito de %d\n", parent_of_del->key);
-        parent_of_del->right = child;
+        parent->right = child;
     }
-    printf("[AVL] Liberando nó %d\n", to_delete->key);
-    free(to_delete);
-    
-    // 3) Balanceamento
-    printf("[AVL] Iniciando balanceamento pós-remoção\n");
+
+    free(curr);
+
     clock_gettime(CLOCK_MONOTONIC, &ts2);
     avl_full_balance(&root);
     clock_gettime(CLOCK_MONOTONIC, &ts3);
-    
+
     result.t_balance = diff_nsec(&ts2, &ts3);
     result.node = root;
-    printf("[AVL] Remoção completa da chave %d\n", key);
     return result;
 }
 
 AVLNode* avl_deleteNode(AVLNode* root, int key, int64_t *out_busca, int64_t *out_bal) {
-    printf("[AVL] Chamada para deletar chave %d\n", key);
     AVLDelResult res = avl_deleteNode_internal(root, key);
     *out_busca = res.t_busca_remocao;
     *out_bal = res.t_balance;
@@ -293,7 +239,6 @@ AVLNode* avl_deleteNode(AVLNode* root, int key, int64_t *out_busca, int64_t *out
 
 void avl_free(AVLNode* node) {
     if (!node) return;
-    printf("[AVL] Liberando nó %d\n", node->key);
     avl_free(node->left);
     avl_free(node->right);
     free(node);
@@ -313,7 +258,6 @@ typedef struct {
 } RBTree;
 
 RBNode* rb_newNode(int key) {
-    printf("[RB] Criando novo nó com chave %d\n", key);
     RBNode* node = (RBNode*)malloc(sizeof(RBNode));
     node->key = key;
     node->color = RED;
@@ -322,7 +266,6 @@ RBNode* rb_newNode(int key) {
 }
 
 void rb_leftRotate(RBTree *tree, RBNode *x) {
-    printf("[RB] Rotação esquerda no nó %d\n", x->key);
     RBNode *y = x->right;
     x->right = y->left;
     if (y->left) y->left->parent = x;
@@ -335,7 +278,6 @@ void rb_leftRotate(RBTree *tree, RBNode *x) {
 }
 
 void rb_rightRotate(RBTree *tree, RBNode *y) {
-    printf("[RB] Rotação direita no nó %d\n", y->key);
     RBNode *x = y->left;
     y->left = x->right;
     if (x->right) x->right->parent = y;
@@ -348,25 +290,21 @@ void rb_rightRotate(RBTree *tree, RBNode *y) {
 }
 
 void rb_insertFixup(RBTree *tree, RBNode *z) {
-    printf("[RB] Iniciando fixup para inserção da chave %d\n", z->key);
     while (z->parent && z->parent->color == RED) {
         RBNode *g = z->parent->parent;
         if (!g) break;
         if (z->parent == g->left) {
             RBNode *y = g->right;
             if (y && y->color == RED) {
-                printf("[RB] Caso 1: tio vermelho (chave %d)\n", z->key);
                 z->parent->color = BLACK;
                 y->color = BLACK;
                 g->color = RED;
                 z = g;
             } else {
                 if (z == z->parent->right) {
-                    printf("[RB] Caso 2: forma de triângulo (chave %d)\n", z->key);
                     z = z->parent;
                     rb_leftRotate(tree, z);
                 }
-                printf("[RB] Caso 3: forma de linha (chave %d)\n", z->key);
                 z->parent->color = BLACK;
                 g->color = RED;
                 rb_rightRotate(tree, g);
@@ -374,18 +312,15 @@ void rb_insertFixup(RBTree *tree, RBNode *z) {
         } else {
             RBNode *y = g->left;
             if (y && y->color == RED) {
-                printf("[RB] Caso 1 (espelhado): tio vermelho (chave %d)\n", z->key);
                 z->parent->color = BLACK;
                 y->color = BLACK;
                 g->color = RED;
                 z = g;
             } else {
                 if (z == z->parent->left) {
-                    printf("[RB] Caso 2 (espelhado): forma de triângulo (chave %d)\n", z->key);
                     z = z->parent;
                     rb_rightRotate(tree, z);
                 }
-                printf("[RB] Caso 3 (espelhado): forma de linha (chave %d)\n", z->key);
                 z->parent->color = BLACK;
                 g->color = RED;
                 rb_leftRotate(tree, g);
@@ -393,11 +328,9 @@ void rb_insertFixup(RBTree *tree, RBNode *z) {
         }
     }
     tree->root->color = BLACK;
-    printf("[RB] Fixup concluído para chave %d\n", z->key);
 }
 
 void rb_insert(RBTree *tree, int key) {
-    printf("[RB] Inserindo chave %d\n", key);
     RBNode *z = rb_newNode(key);
     RBNode *y = NULL;
     RBNode *x = tree->root;
@@ -416,13 +349,11 @@ void rb_insert(RBTree *tree, int key) {
 }
 
 RBNode* rb_minimum(RBNode* x) {
-    printf("[RB] Buscando mínimo a partir do nó %d\n", x->key);
     while (x->left) x = x->left;
     return x;
 }
 
 void rb_transplant(RBTree *tree, RBNode *u, RBNode *v) {
-    printf("[RB] Transplantando nó %d por %d\n", u ? u->key : -1, v ? v->key : -1);
     if (!u->parent) tree->root = v;
     else if (u == u->parent->left) u->parent->left = v;
     else u->parent->right = v;
@@ -430,7 +361,6 @@ void rb_transplant(RBTree *tree, RBNode *u, RBNode *v) {
 }
 
 void rb_deleteFixup(RBTree *tree, RBNode *x) {
-    printf("[RB] Iniciando fixup para remoção\n");
 
     while (x != tree->root && (!x || x->color == BLACK)) {
         RBNode *xp = x ? x->parent : NULL;
@@ -439,7 +369,6 @@ void rb_deleteFixup(RBTree *tree, RBNode *x) {
         if (x == xp->left) {
             RBNode *w = xp->right;
             if (w && w->color == RED) {
-                printf("[RB] Caso 1: irmão vermelho\n");
                 w->color = BLACK;
                 xp->color = RED;
                 rb_leftRotate(tree, xp);
@@ -447,18 +376,15 @@ void rb_deleteFixup(RBTree *tree, RBNode *x) {
             }
             if ((!w || !w->left || w->left->color == BLACK) &&
                 (!w || !w->right || w->right->color == BLACK)) {
-                printf("[RB] Caso 2: irmão preto com filhos pretos\n");
                 if (w) w->color = RED;
                 x = xp;
             } else {
                 if (!w || !w->right || w->right->color == BLACK) {
-                    printf("[RB] Caso 3: irmão preto com filho esquerdo vermelho\n");
                     if (w && w->left) w->left->color = BLACK;
                     if (w) w->color = RED;
                     rb_rightRotate(tree, w);
                     w = xp->right;
                 }
-                printf("[RB] Caso 4: irmão preto com filho direito vermelho\n");
                 if (w) w->color = xp->color;
                 xp->color = BLACK;
                 if (w && w->right) w->right->color = BLACK;
@@ -468,7 +394,6 @@ void rb_deleteFixup(RBTree *tree, RBNode *x) {
         } else {
             RBNode *w = xp->left;
             if (w && w->color == RED) {
-                printf("[RB] Caso 1 (espelhado): irmão vermelho\n");
                 w->color = BLACK;
                 xp->color = RED;
                 rb_rightRotate(tree, xp);
@@ -476,18 +401,15 @@ void rb_deleteFixup(RBTree *tree, RBNode *x) {
             }
             if ((!w || !w->right || w->right->color == BLACK) &&
                 (!w || !w->left || w->left->color == BLACK)) {
-                printf("[RB] Caso 2 (espelhado): irmão preto com filhos pretos\n");
                 if (w) w->color = RED;
                 x = xp;
             } else {
                 if (!w || !w->left || w->left->color == BLACK) {
-                    printf("[RB] Caso 3 (espelhado): irmão preto com filho direito vermelho\n");
                     if (w && w->right) w->right->color = BLACK;
                     if (w) w->color = RED;
                     rb_leftRotate(tree, w);
                     w = xp->left;
                 }
-                printf("[RB] Caso 4 (espelhado): irmão preto com filho esquerdo vermelho\n");
                 if (w) w->color = xp->color;
                 xp->color = BLACK;
                 if (w && w->left) w->left->color = BLACK;
@@ -497,7 +419,6 @@ void rb_deleteFixup(RBTree *tree, RBNode *x) {
         }
     }
     if (x) x->color = BLACK;
-    printf("[RB] Fixup de remoção concluído\n");
 }
 
 typedef struct {
@@ -510,13 +431,11 @@ RBDelResult rb_delete(RBTree *tree, int key) {
     struct timespec ts1, ts2, ts3;
     RBDelResult result = { tree->root, 0, 0 };
     
-    printf("[RB] Iniciando remoção da chave %d\n", key);
     
     // 1) Busca o nó a ser removido
     clock_gettime(CLOCK_MONOTONIC, &ts1);
     RBNode *z = tree->root;
     while (z) {
-        printf("[RB] Buscando chave %d (atual: %d)\n", key, z ? z->key : -1);
         if (key < z->key) z = z->left;
         else if (key > z->key) z = z->right;
         else break;
@@ -525,35 +444,28 @@ RBDelResult rb_delete(RBTree *tree, int key) {
     result.t_busca_remocao = diff_nsec(&ts1, &ts2);
     
     if (!z) {
-        printf("[RB] Chave %d não encontrada\n", key);
         result.raiz = tree->root;
         return result;
     }
     
-    printf("[RB] Nó %d encontrado para remoção\n", z->key);
     
     RBNode *y = z;
     Color y_original_color = y->color;
     RBNode *x = NULL;
     
     if (!z->left) {
-        printf("[RB] Nó sem filho esquerdo\n");
         x = z->right;
         rb_transplant(tree, z, z->right);
     } else if (!z->right) {
-        printf("[RB] Nó sem filho direito\n");
         x = z->left;
         rb_transplant(tree, z, z->left);
     } else {
-        printf("[RB] Nó com dois filhos\n");
         y = rb_minimum(z->right);
         y_original_color = y->color;
         x = y->right;
         if (y->parent == z) {
-            printf("[RB] Sucessor é filho direito\n");
             if (x) x->parent = y;
         } else {
-            printf("[RB] Sucessor não é filho direito\n");
             rb_transplant(tree, y, y->right);
             y->right = z->right;
             y->right->parent = y;
@@ -563,11 +475,9 @@ RBDelResult rb_delete(RBTree *tree, int key) {
         y->left->parent = y;
         y->color = z->color;
     }
-    printf("[RB] Liberando nó %d\n", z->key);
     free(z);
     
     // 2) Balanceamento
-    printf("[RB] Iniciando fixup pós-remoção\n");
     clock_gettime(CLOCK_MONOTONIC, &ts2);
     if (y_original_color == BLACK) {
         rb_deleteFixup(tree, x);
@@ -576,13 +486,11 @@ RBDelResult rb_delete(RBTree *tree, int key) {
     
     result.t_balance = diff_nsec(&ts2, &ts3);
     result.raiz = tree->root;
-    printf("[RB] Remoção da chave %d concluída\n", key);
     return result;
 }
 
 void rb_free(RBNode* node) {
     if (!node) return;
-    printf("[RB] Liberando nó %d\n", node->key);
     rb_free(node->left);
     rb_free(node->right);
     free(node);
@@ -604,7 +512,6 @@ typedef struct {
 } SkipList;
 
 SkipList* sl_create() {
-    printf("[SL] Criando nova SkipList\n");
     SkipList *sl = (SkipList*)malloc(sizeof(SkipList));
     sl->level = 1;
     SLNode *header = (SLNode*)malloc(sizeof(SLNode));
@@ -621,12 +528,10 @@ int sl_randomLevel() {
     int lvl = 1;
     while ((rand() / (double)RAND_MAX) < SKIPLIST_P && lvl < SKIPLIST_MAX_LEVEL)
         lvl++;
-    printf("[SL] Nível aleatório gerado: %d\n", lvl);
     return lvl;
 }
 
 void sl_insert(SkipList *sl, int key) {
-    printf("[SL] Inserindo chave %d\n", key);
     SLNode *update[SKIPLIST_MAX_LEVEL + 1];
     SLNode *x = sl->header;
     for (int i = sl->level; i >= 1; i--) {
@@ -638,7 +543,6 @@ void sl_insert(SkipList *sl, int key) {
     if (!x || x->key != key) {
         int lvl = sl_randomLevel();
         if (lvl > sl->level) {
-            printf("[SL] Aumentando nível da SkipList para %d\n", lvl);
             for (int i = sl->level + 1; i <= lvl; i++)
                 update[i] = sl->header;
             sl->level = lvl;
@@ -651,7 +555,6 @@ void sl_insert(SkipList *sl, int key) {
             newNode->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = newNode;
         }
-        printf("[SL] Chave %d inserida no nível %d\n", key, lvl);
     }
 }
 
@@ -667,7 +570,6 @@ SLDelResult sl_delete(SkipList *sl, int key) {
     SLNode *update[SKIPLIST_MAX_LEVEL + 1];
     SLNode *x = sl->header;
     
-    printf("[SL] Removendo chave %d\n", key);
     clock_gettime(CLOCK_MONOTONIC, &ts1);
     for (int i = sl->level; i >= 1; i--) {
         while (x->forward[i] && x->forward[i]->key < key)
@@ -679,34 +581,26 @@ SLDelResult sl_delete(SkipList *sl, int key) {
     res.t_busca_remocao = diff_nsec(&ts1, &ts2);
     
     if (x && x->key == key) {
-        printf("[SL] Chave %d encontrada para remoção\n", key);
         res.found = 1;
         for (int i = 1; i <= sl->level; i++) {
             if (update[i]->forward[i] != x) break;
             update[i]->forward[i] = x->forward[i];
         }
-        printf("[SL] Liberando nó %d\n", x->key);
         free(x->forward);
         free(x);
         
         while (sl->level > 1 && !sl->header->forward[sl->level]) {
-            printf("[SL] Reduzindo nível da SkipList para %d\n", sl->level-1);
             sl->level--;
         }
-    } else {
-        printf("[SL] Chave %d não encontrada\n", key);
-    }
+    } 
     res.t_balance = 0;
-    printf("[SL] Remoção concluída para chave %d\n", key);
     return res;
 }
 
 void sl_free(SkipList* sl) {
-    printf("[SL] Liberando SkipList\n");
     SLNode* node = sl->header->forward[1];
     while (node) {
         SLNode* next = node->forward[1];
-        printf("[SL] Liberando nó %d\n", node->key);
         free(node->forward);
         free(node);
         node = next;
@@ -718,106 +612,104 @@ void sl_free(SkipList* sl) {
 
 // ====================== Função de experimento ==========================
 void experimento_para_tamanho(int N, FILE *csv) {
-    printf("\n===== INICIANDO EXPERIMENTO PARA N = %d =====\n", N);
-    
-    printf("[EXPERIMENTO] Gerando vetor...\n");
-    int *vetor = gera_vetor(N);
+    printf("Iniciando experimento para N = %d\n", N);
 
-    // AVL
-    printf("\n[EXPERIMENTO] TESTE AVL\n");
-    printf("[AVL] Construindo árvore...\n");
-    AVLNode *root_avl = NULL;
-    for (int i = 0; i < N; i++) {
-        root_avl = avl_insert(root_avl, vetor[i]);
+    int64_t menor_total_avl = INT64_MAX, menor_busca_avl = 0, menor_bal_avl = 0;
+    int64_t menor_total_rb = INT64_MAX, menor_busca_rb = 0, menor_bal_rb = 0;
+    int64_t menor_total_sl = INT64_MAX, menor_busca_sl = 0, menor_bal_sl = 0;
+
+    for (int tentativa = 0; tentativa < 1; tentativa++) {
+        printf("Tentativa %d para N = %d\n", tentativa + 1, N);
+
+        int *vetor = gera_vetor(N);
+
+        // AVL
+        AVLNode *root_avl = NULL;
+        for (int i = 0; i < N; i++) root_avl = avl_insert(root_avl, vetor[i]);
+
+        int64_t busca_avl = 0, bal_avl = 0;
+        for (int i = 0; i < N; i++) {
+            int64_t b = 0, t = 0;
+            root_avl = avl_deleteNode(root_avl, vetor[i], &b, &t);
+            busca_avl += b;
+            bal_avl += t;
+        }
+        avl_free(root_avl);
+        printf("AVL: finalizado\n");
+
+        int64_t total_avl = busca_avl + bal_avl;
+        if (total_avl < menor_total_avl) {
+            menor_total_avl = total_avl;
+            menor_busca_avl = busca_avl;
+            menor_bal_avl = bal_avl;
+        }
+
+        // RB
+        RBTree rb_tree = { NULL };
+        for (int i = 0; i < N; i++) rb_insert(&rb_tree, vetor[i]);
+
+        int64_t busca_rb = 0, bal_rb = 0;
+        for (int i = 0; i < N; i++) {
+            RBDelResult res = rb_delete(&rb_tree, vetor[i]);
+            busca_rb += res.t_busca_remocao;
+            bal_rb += res.t_balance;
+        }
+        rb_free(rb_tree.root);
+        printf("RB: finalizado\n");
+
+        int64_t total_rb = busca_rb + bal_rb;
+        if (total_rb < menor_total_rb) {
+            menor_total_rb = total_rb;
+            menor_busca_rb = busca_rb;
+            menor_bal_rb = bal_rb;
+        }
+
+        // Skip List
+        SkipList *sl = sl_create();
+        for (int i = 0; i < N; i++) sl_insert(sl, vetor[i]);
+
+        int64_t busca_sl = 0, bal_sl = 0;
+        for (int i = 0; i < N; i++) {
+            SLDelResult res = sl_delete(sl, vetor[i]);
+            busca_sl += res.t_busca_remocao;
+            bal_sl += res.t_balance;
+        }
+        sl_free(sl);
+        printf("SkipList: finalizado\n");
+
+        int64_t total_sl = busca_sl + bal_sl;
+        if (total_sl < menor_total_sl) {
+            menor_total_sl = total_sl;
+            menor_busca_sl = busca_sl;
+            menor_bal_sl = bal_sl;
+        }
+
+        free(vetor);
     }
-    
-    printf("[AVL] Iniciando remoções...\n");
-    int64_t soma_busca_avl = 0, soma_bal_avl = 0, soma_total_avl = 0;
-    for (int i = 0; i < N; i++) {
-        printf("[AVL] Removendo chave %d (%d/%d)\n", vetor[i], i+1, N);
-        int64_t t_busca = 0, t_bal = 0;
-        root_avl = avl_deleteNode(root_avl, vetor[i], &t_busca, &t_bal);
-        soma_busca_avl += t_busca;
-        soma_bal_avl += t_bal;
-        soma_total_avl += (t_busca + t_bal);
-    }
-    fprintf(csv, "AVL,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
-            N, soma_busca_avl, soma_bal_avl, soma_total_avl);
+
+    fprintf(csv, "AVL,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n", N, menor_busca_avl, menor_bal_avl, menor_total_avl);
+    fprintf(csv, "RB,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n", N, menor_busca_rb, menor_bal_rb, menor_total_rb);
+    fprintf(csv, "SkipList,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n", N, menor_busca_sl, menor_bal_sl, menor_total_sl);
     fflush(csv);
-    printf("[AVL] Liberando memória...\n");
-    avl_free(root_avl);
-
-    // RB-Tree
-    printf("\n[EXPERIMENTO] TESTE RB-TREE\n");
-    printf("[RB] Construindo árvore...\n");
-    RBTree rb_tree = { NULL };
-    for (int i = 0; i < N; i++) {
-        rb_insert(&rb_tree, vetor[i]);
-    }
-    
-    printf("[RB] Iniciando remoções...\n");
-    int64_t soma_busca_rb = 0, soma_bal_rb = 0, soma_total_rb = 0;
-    for (int i = 0; i < N; i++) {
-        printf("[RB] Removendo chave %d (%d/%d)\n", vetor[i], i+1, N);
-        RBDelResult res = rb_delete(&rb_tree, vetor[i]);
-        soma_busca_rb += res.t_busca_remocao;
-        soma_bal_rb += res.t_balance;
-        soma_total_rb += (res.t_busca_remocao + res.t_balance);
-    }
-    fprintf(csv, "RB,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
-            N, soma_busca_rb, soma_bal_rb, soma_total_rb);
-    fflush(csv);
-    printf("[RB] Liberando memória...\n");
-    rb_free(rb_tree.root);
-
-    // Skip List
-    printf("\n[EXPERIMENTO] TESTE SKIP LIST\n");
-    printf("[SL] Construindo SkipList...\n");
-    SkipList *sl = sl_create();
-    for (int i = 0; i < N; i++) {
-        sl_insert(sl, vetor[i]);
-    }
-    
-    printf("[SL] Iniciando remoções...\n");
-    int64_t soma_busca_sl = 0, soma_bal_sl = 0, soma_total_sl = 0;
-    for (int i = 0; i < N; i++) {
-        printf("[SL] Removendo chave %d (%d/%d)\n", vetor[i], i+1, N);
-        SLDelResult res = sl_delete(sl, vetor[i]);
-        soma_busca_sl += res.t_busca_remocao;
-        soma_bal_sl += res.t_balance;
-        soma_total_sl += (res.t_busca_remocao + res.t_balance);
-    }
-    fprintf(csv, "SkipList,%d,%" PRId64 ",%" PRId64 ",%" PRId64 "\n",
-            N, soma_busca_sl, soma_bal_sl, soma_total_sl);
-    fflush(csv);
-    printf("[SL] Liberando memória...\n");
-    sl_free(sl);
-
-    printf("[EXPERIMENTO] Liberando vetor...\n");
-    free(vetor);
-    printf("===== EXPERIMENTO PARA N = %d CONCLUÍDO =====\n\n", N);
+    printf("Experimento N = %d finalizado\n", N);
 }
 
-// ====================== main ==========================
+
 int main() {
     srand(12345);
-    int tamanhos[] = {10, 20, 30, 40, 50};
+    int tamanhos[] = { 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000, 210000, 220000, 230000, 240000, 250000, 260000, 270000, 280000, 290000, 300000, 310000, 320000, 330000, 340000, 350000, 360000, 370000, 380000, 390000, 400000, 410000, 420000, 430000, 440000, 450000, 460000, 470000, 480000, 490000, 500000};
+    int num_tamanhos = sizeof(tamanhos) / sizeof(tamanhos[0]);
 
-    FILE *csv = fopen("../resultados/resultados_ate_50.csv", "w");
-    if (!csv) {
-        perror("Não foi possível criar resultados.csv");
-        return EXIT_FAILURE;
-    }
+    FILE *csv = fopen("../resultados/resultados.csv", "w");
+    if (!csv) return EXIT_FAILURE;
+
     fprintf(csv, "Estrutura,N,TempoBuscaRemocao(ns),TempoBalanceamento(ns),TempoTotal(ns)\n");
     fflush(csv);
 
-    for (int i = 0; i < 5; i++) {
-        printf("Iniciando experimento para N = %d...\n", tamanhos[i]);
+    for (int i = 0; i < num_tamanhos; i++) {
         experimento_para_tamanho(tamanhos[i], csv);
         fflush(csv);
-        printf("Concluído N = %d\n", tamanhos[i]);
     }
     fclose(csv);
-    printf("Todas as medições gravadas em resultados.csv\n");
     return 0;
 }
