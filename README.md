@@ -159,19 +159,19 @@ Os testes foram executados em um ambiente contendo:
 
 ### Tempo Balanceamento – AVL x RB
   
-  <img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="80%" style="display: center;">
+  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="80%" style="display: center;">
 
 ---
 
 ### Tempo Busca + Remoção
 
-  <img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="80%" style="display: center;">
+  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="80%" style="display: center;">
 
 ---
 
 ### Tempo Total
 
-<img src="https://github.com/gabiel98/Ana_julia_e_Gabriel_peixoto_ws_AA_RR_2025/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="80%" style="display: center;">
+<img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="80%" style="display: center;">
 
 
 ---
