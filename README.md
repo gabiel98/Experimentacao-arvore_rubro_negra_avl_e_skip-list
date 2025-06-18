@@ -159,7 +159,7 @@ Os testes foram executados em um ambiente contendo:
 
 ### Tempo Balanceamento – AVL x RB
   
-  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="80%" style="display: center;">
+  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="60%" style="display: center;">
 
 ### Observações:
 **AVL** mostra um crescimento exponencial no tempo de balanceamento, atingindo a casa de `10¹²` nanossegundos.
@@ -173,7 +173,7 @@ Os testes foram executados em um ambiente contendo:
 
 ### Tempo Busca + Remoção
 
-  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="80%" style="display: center;">
+  <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="60%" style="display: center;">
 
 ### Observações:
 **RB-Tree** apresenta o melhor desempenho de remoção, consistentemente abaixo das demais.
@@ -187,7 +187,7 @@ Os testes foram executados em um ambiente contendo:
 
 ### Tempo Total
 
-<img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="80%" style="display: center;">
+<img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="60%" style="display: center;">
 
 ### Observações:
 **AVL** tem o maior tempo total de execução, fortemente impactado pelo custo de balanceamento.
