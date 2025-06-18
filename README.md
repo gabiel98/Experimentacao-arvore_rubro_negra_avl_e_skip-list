@@ -60,8 +60,6 @@ cd ..
 
 ```bash
 ./comparacoes/comparacao_estruturas
-# ou no Windows:
-# comparacoes\\comparacao_estruturas.exe
 ```
 
 Isso vai gerar (ou atualizar) `resultados/resultados.csv` com os tempos medidos.
@@ -70,7 +68,7 @@ Isso vai gerar (ou atualizar) `resultados/resultados.csv` com os tempos medidos.
 
 ```bash
 cd plotar_graficos
-python3 plotar_graficos.py
+python plotar_graficos.py
 ```
 
 Os arquivos PNG serão salvos na pasta `graficos/`.
