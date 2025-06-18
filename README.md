@@ -161,11 +161,23 @@ Os testes foram executados em um ambiente contendo:
   
   <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_balanceamento.png" alt="Gráfico 1" width="80%" style="display: center;">
 
+### Observações:
+**AVL** mostra um crescimento exponencial no tempo de balanceamento, atingindo a casa de `10¹²` nanossegundos.
+**RB-Tree**, por outro lado, mantém um custo de balanceamento muito inferior — resultado direto de suas regras mais simples de reestruturação.
+**Skip List** não aparece neste gráfico pois seu balanceamento é probabilístico e ocorre durante inserções, não sendo medido explicitamente.
+
+
 ---
 
 ### Tempo Busca + Remoção
 
   <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_busca_remocao.png" alt="Gráfico 2" width="80%" style="display: center;">
+
+### Observações:
+**RB-Tree** apresenta o melhor desempenho de remoção, consistentemente abaixo das demais.
+**Skip List** começa com vantagem, mas é superada pela RB a partir de aproximadamente **420.000 elementos**.
+**AVL** tem desempenho crescente, sendo a mais lenta nessa métrica. Isso se deve à sua natureza altamente balanceada, que exige operações adicionais durante remoções.
+
 
 ---
 
@@ -173,5 +185,18 @@ Os testes foram executados em um ambiente contendo:
 
 <img src="https://github.com/gabiel98/Experimentacao-arvore_rubro_negra_avl_e_skip-list/blob/main/graficos/grafico_total.png" alt="Gráfico 3" width="80%" style="display: center;">
 
+### Observações:
+**AVL** tem o maior tempo total de execução, fortemente impactado pelo custo de balanceamento.
+**RB-Tree** oferece o melhor custo-benefício geral: baixo tempo de remoção e balanceamento estável.
+**Skip List** mantém desempenho próximo da RB, sendo competitiva até cerca de 420.000 elementos.
 
 ---
+
+## Conclusões
+
+| Estrutura | Vantagens | Desvantagens |
+|----------|-----------|--------------|
+| **AVL** | Busca garantidamente O(log n) | Balanceamento caro em remoções |
+| **RB-Tree** | Melhor equilíbrio geral entre busca, remoção e balanceamento | Implementação mais complexa |
+| **Skip List** | Simples e eficiente em muitos casos | Desempenho varia com sorteio (probabilístico) |
+
