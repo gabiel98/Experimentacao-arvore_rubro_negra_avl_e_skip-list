@@ -2,7 +2,7 @@
 
 ## Introdução
 
-Seja bem-vindo(a)! Neste trabalho, vamos explorar na prática o comportamento de três estruturas de dados bastante usadas em aplicações que exigem inserção, busca e remoção eficientes:
+Neste trabalho, vamos explorar na prática o comportamento de três estruturas de dados bastante usadas em aplicações que exigem inserção, busca e remoção eficientes:
 
 - **Árvore AVL**
 - **Árvore Rubro-Negra (RB)**
